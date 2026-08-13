@@ -1,10 +1,40 @@
 # ClaimsAssist AI — Member & Claims Intelligence
 
-ClaimsAssist AI is a multi-agent healthcare claims intelligence platform designed to help members understand their claims, coverage, costs, and next steps through a unified AI-powered experience.
+ClaimsAssist AI is a multi-agent healthcare claims intelligence platform designed to help members understand claims, coverage, costs, referrals, prior authorizations, and next steps through a unified AI-powered experience.
 
-Built for the **Humana Hackathon**, ClaimsAssist uses a hierarchical multi-agent architecture consisting of **5 Gemini 1.5 Pro agents**: one central **Orchestrator Agent** and four specialized **Subagents** that can analyze different parts of a member's request simultaneously.
+Built for the **Humana Hackathon**, ClaimsAssist uses a hierarchical multi-agent architecture consisting of **5 Gemini 1.5 Pro agents**: one central **Orchestrator Agent** and four specialized **Subagents** that can analyze different parts of a member request simultaneously.
 
-Rather than sending an entire healthcare question through a single LLM workflow, ClaimsAssist decomposes complex requests into specialized tasks, executes them in parallel, and synthesizes the results into one member-friendly response.
+Rather than routing an entire healthcare question through a single LLM workflow, ClaimsAssist decomposes complex requests into specialized tasks, executes them in parallel, and synthesizes the results into one member-friendly response.
+
+---
+
+## Product Experience
+
+### Secure Member Access
+
+Members begin through a secure identity-verification experience designed for both primary members and authorized family users.
+
+<p align="center">
+  <img src="assets/login.png" alt="ClaimsAssist secure member login" width="900"/>
+</p>
+
+### Multi-Agent AI Assistant
+
+The conversational interface gives members a single place to ask questions about claims, coverage, referrals, prior authorization, costs, and family access.
+
+Behind the interface, the Orchestrator Agent coordinates specialized Gemini agents to analyze the request and synthesize a unified answer.
+
+<p align="center">
+  <img src="assets/ai-assistant.png" alt="ClaimsAssist multi-agent AI assistant" width="900"/>
+</p>
+
+### AI Voice Support
+
+ClaimsAssist extends the same member-support experience to a voice interface, allowing members to interact with the claims assistant through a secure call-style experience.
+
+<p align="center">
+  <img src="assets/voice-assistant.png" alt="ClaimsAssist AI voice support interface" width="900"/>
+</p>
 
 ---
 
@@ -57,7 +87,6 @@ The **Orchestrator Agent** sits at the top of the hierarchy. It receives the mem
                                 v
                     +-------------------------+
                     |    ORCHESTRATOR AGENT   |
-                    |                         |
                     |   Response Synthesis    |
                     +------------+------------+
                                  |
@@ -71,47 +100,15 @@ The **Orchestrator Agent** sits at the top of the hierarchy. It receives the mem
 
 ## How the Agent Hierarchy Works
 
-### 1. Member Request
+1. **Member Request** — A member asks a question through the conversational or voice interface.
 
-A member submits a question through the ClaimsAssist interface.
+2. **Orchestrator Analysis** — The Gemini-powered Orchestrator determines what information is required to answer the request.
 
-The request may require information from several healthcare domains rather than having a simple one-step answer.
+3. **Task Decomposition** — Complex requests are broken into smaller tasks that can be handled independently.
 
-### 2. Orchestrator Analysis
+4. **Parallel Agent Execution** — Four specialized Gemini 1.5 Pro subagents can simultaneously analyze their assigned portions of the request.
 
-The **Orchestrator Agent**, powered by Gemini 1.5 Pro, acts as the central coordination layer.
-
-It analyzes the member's request and determines which specialized agents should participate in answering it.
-
-### 3. Task Decomposition
-
-Instead of asking one model to solve the entire problem, the Orchestrator breaks the request into smaller specialized tasks.
-
-```text
-Complex Member Question
-          |
-          v
-   Orchestrator
-          |
-     Decomposition
-          |
-    +-----+-----+-----+-----+
-    |     |     |     |     |
-    v     v     v     v
-   A1    A2    A3    A4
-```
-
-### 4. Parallel Agent Execution
-
-The four Gemini-powered subagents can work **simultaneously** on their assigned tasks.
-
-Each subagent operates independently with specialized instructions and context, allowing ClaimsAssist to gather multiple perspectives without requiring every task to execute sequentially.
-
-### 5. Response Synthesis
-
-The results from the specialized agents are returned to the Orchestrator.
-
-The Orchestrator evaluates the outputs, combines the relevant information, and generates a single coherent response for the member.
+5. **Response Synthesis** — Agent outputs return to the Orchestrator, which combines the relevant information into one coherent member response.
 
 ```text
 Agent 1 ──┐
@@ -124,28 +121,25 @@ Agent 4 ──┘
 
 ## Why Multi-Agent?
 
-Healthcare claims questions can span several areas at once.
+Healthcare claims questions often span multiple domains at once. A single question may require understanding:
 
-A member may need to understand:
+- Claims
+- Coverage and benefits
+- Referrals
+- Prior authorizations
+- Member costs
+- Family access
+- Recommended next steps
 
-- What happened with a claim
-- Why a particular decision occurred
-- What their coverage means
-- What costs they may be responsible for
-- What actions they can take next
-- Whether additional support is necessary
-
-A traditional single-agent architecture requires one model to reason through all of these concerns.
-
-ClaimsAssist instead uses **specialization + orchestration**.
+ClaimsAssist uses **specialization + orchestration** instead of requiring one general-purpose agent to handle the entire workflow sequentially.
 
 ```text
-                SINGLE AGENT
+                 SINGLE AGENT
 
 Member ──> LLM ──> Entire Problem ──> Response
 
 
-              CLAIMSASSIST AI
+                CLAIMSASSIST
 
                        ┌──> Agent 1 ──┐
                        ├──> Agent 2 ──┤
@@ -158,16 +152,16 @@ This architecture provides:
 - **Parallel execution** across specialized tasks
 - **Separation of responsibilities** between agents
 - **Centralized orchestration** of complex requests
-- **Modular agent design** for easier expansion
+- **Modular agent design**
 - **Independent agent prompting and context**
 - **Unified response synthesis**
-- **More explainable AI workflows**
+- **Extensible AI workflows**
 
 ---
 
 ## Agent Design
 
-All five agents are powered by **Gemini 1.5 Pro**, but each wrapper serves a different purpose within the system.
+All five agents are powered by **Gemini 1.5 Pro**, while each wrapper serves a different responsibility within the system.
 
 ```text
 Gemini 1.5 Pro
@@ -183,7 +177,7 @@ Gemini 1.5 Pro
       +---- Specialized Agent 4
 ```
 
-Using separate wrappers allows each agent to maintain its own:
+Separate wrappers allow each agent to maintain its own:
 
 - System instructions
 - Responsibilities
@@ -191,37 +185,31 @@ Using separate wrappers allows each agent to maintain its own:
 - Input data
 - Output structure
 
-This allows the underlying model to remain consistent while giving each agent a distinct role within the overall workflow.
+The underlying model remains consistent while each agent performs a distinct role within the overall workflow.
 
 ---
 
 ## Member Portal
 
-ClaimsAssist includes a member-facing web application for accessing claims information and interacting with the AI system.
-
-### Routes
-
 | Route | Description |
 |---|---|
-| `/` | Member login |
+| `/` | Secure member access |
 | `/dashboard` | Member overview and claims intelligence |
 | `/claims` | Claims information |
 | `/assistant` | Multi-agent AI assistant |
-| `/call` | Member support experience |
+| `/call` | AI voice support experience |
 
 ---
 
 ## Tech Stack
 
 ### Frontend
-
 - React
 - TypeScript
 - Vite
 - Tailwind CSS
 
 ### AI
-
 - Gemini 1.5 Pro
 - 5-agent hierarchical architecture
 - 1 Orchestrator Agent
@@ -230,7 +218,6 @@ ClaimsAssist includes a member-facing web application for accessing claims infor
 - Multi-agent response synthesis
 
 ### Data
-
 - Local member CSV data
 - Local claims data
 
@@ -273,8 +260,6 @@ http://localhost:5173
 
 ## Demo Member
 
-Use the following member information to explore the prototype:
-
 ```text
 Member ID: MBR00036
 First Name: Joshua
@@ -284,21 +269,7 @@ Date of Birth: 1970-07-02
 
 ---
 
-## Architecture Philosophy
-
-ClaimsAssist is built around a simple principle:
-
-> **Complex healthcare questions should be decomposed into specialized tasks rather than handled by one general-purpose agent.**
-
-The four subagents provide specialized reasoning while the Orchestrator maintains control over the complete workflow.
-
-This separation makes the system modular: individual agents can be modified, expanded, or replaced without redesigning the entire ClaimsAssist architecture.
-
----
-
 ## Future Development
-
-The multi-agent architecture provides a foundation for future capabilities including:
 
 - Live claims and member API integrations
 - Persistent member context
